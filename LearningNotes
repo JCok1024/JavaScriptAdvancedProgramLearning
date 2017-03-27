@@ -1,0 +1,171 @@
+//记录一些学习《JavaScript高级程序设计》时出问题的情况；
+//2017.03.20创建
+
+
+
+
+//2017.03.20， 13.3
+Q问题：
+        <input type="button" value="myBtn2" id="myBtn2/">
+        console.log提示Cannot read property 'addEventListener' of null
+        把标签结束的/打入id的双引号内，导致myBtn2的事件绑定全部出错；
+
+A解决办法：
+        在
+        http://stackoverflow.com/questions/39943465/440-uncaught-typeerror-cannot-set-property-onclick-of-null
+        中找到答案，判断是DOM获取的元素出错；
+        再次检查input标签的拼写，解决了问题。
+
+I归纳：
+        先检查拼写，再检查逻辑；
+
+
+
+
+
+//2017.03.21,  13.4
+Q问题：
+        eventUtil.addHandler(window,"resize",handlerResize);
+        resize移动中会频繁执行handlerResize。
+
+A解决办法：
+        1 在
+        http://stackoverflow.com/questions/5534363/why-does-the-jquery-resize-event-fire-twice
+        中找到debounce()和throttle()的概念，并实现代码;
+        完成代码后发现
+        var handlerResize = debounce(console.log("window resized."), 500, true);
+        console.log提示func.apply is not a function.；
+
+        2 在
+        http://stackoverflow.com/questions/33386657/cannot-read-property-apply-of-undefined
+        中找到You just forgot to declare vm ；
+        发现我的func即console.log或alert()并没有声明为function；
+
+        3 修改后
+        var resizeMsg = function(){
+                console.log("window resized. ");
+        };
+        var handlerResize = debounce(resizeMsg, 500, true);
+        eventUtil.addHandler(window,"resize",handlerResize);
+        按dalay执行handlerResize
+
+I归纳：
+        debounce()限制函数只能在空闲一段时间后触发一次；
+        throttle()限制函数在一段时间内只能触发若干次；
+        在重复触发的事件中应考虑这两个函数以限制触发次数；
+
+
+
+
+
+//2017.03.22 13.4
+Q问题：
+        莫名其妙的Cannot read property addHandler of null.
+
+A解决方法：
+        将引用addHandler的代码段重新打一次；
+
+I归纳：
+        拼写错误问题严重！
+
+
+
+
+
+//2017.03.23 13.4
+Q问题：
+        按照书上代码执行readystatechande事件，在所有的新版浏览器中均无反应；
+
+A解决方法XXX：
+        在
+        https://segmentfault.com/a/1190000004466407
+        找到W3C已将此事件归入xhr中，仅IE6~8支持;
+        此问题暂未解决，待继续学习；
+
+
+
+
+
+//2017.03.24 13.4
+Q1问题：
+        在移动浏览器中touchend无法触发，但touchstart和touchmove正常；
+
+A解决方法：
+        发现安卓4.x中touchmove后touchend无法触发需要touchemove.preventDefault()后手写touchmove事件；
+        拼写检查正确后，更换Chrome/FF的响应式设计模式，模拟的所有机型正常；
+        发现是360极速浏览器的响应式设计模式有问题，不论哪种机型都无法正常触发touchend事件；
+
+I归纳：
+        deleteText("fxxk 360！");
+        移动开发时尝试更换浏览器，避免使用非主流浏览器进行初步的测试；
+        
+
+
+
+
+//2017.03.26 14.1
+Q1问题：
+        对于blur和change事件的理解；
+
+A解决方法：
+        blur包含change，因为change在以下2种情况不能触发：
+        1 在失去焦点但没有对元素进行操作时；
+        2 在对元素进行操作但其值没有改变且失去焦点时；
+
+I归纳：
+        change的触发范围更小，目前我认为用blur的情况会更多；
+        而如果需要跳过blur来监听输入操作，我会选择用keypress / keydown，而不是change；
+
+
+
+Q2问题：
+        1 自动切换焦点的函数中，eventUtil.addHandler(...) is not a function；
+        2 解除私有作用域并重新更正拼写后，只切换了一次焦点；
+
+A解决方法：
+        1 先解除了私有作用域，修正了maxlength的拼写为maxLength；
+          函数可以运行，也没有报错，但只切换了一次焦点；
+
+        2 发现flag的位置为第二层if，导致了只return了1次；
+
+        3 发现在该段私有作用域之前，上一段语句没有打上;;;;;;;;;;这是导致报错的根本原因；
+
+I归纳：
+        1 拼写，什么都别说了，认真看源代码，认真敲；
+        2 养成先打格式再填充内容的编码习惯，写完函数很容易忘记加上分号；
+        3 出现什么BUG，先从自己身上找问题，再从自己的代码找答案，实在不行再搜索，最后才去提问谢谢；
+
+
+
+
+
+//2017.03.27 14.3
+Q1问题：
+        需要实现select在window.load运行一次，每次change时运行一次；
+        但将变量声明如下：
+                var selectedIndex = selLocation.selectedIndex;
+                var selectedOption = selLocation.options[selectedIndex];
+                console.log("Selected index: " + selectedIndex + " Selected text: " + selectedOption.text
+                        + "Selected value: " + selectedOption.value);
+                eventUtil.addHandler(selLocation, "change", function(event){
+                        console.log("Selected index: " + selectedIndex + " Selected text: " + selectedOption.text
+                                + "Selected value: " + selectedOption.value);
+                });
+        每次change返回的都是默认的第一个option；
+
+A解决方法：
+        将变量的副本放入eventUtil.addHandler内，但过于繁琐，将过程封装进handlerSelChange()里：
+                var handlerSelChange = function(event){
+                var selectedIndex = selLocation.selectedIndex;
+                var selectedOption = selLocation.options[selectedIndex];
+                console.log("Selected index: " + selectedIndex + " Selected text: " + selectedOption.text
+                        + "Selected value: " + selectedOption.value);
+                };
+                handlerSelChange();
+                eventUtil.addHandler(selLocation, "change", handlerSelChange);
+
+        window.load时调用一次，再在eventUtil.addHandler里加入该函数，简洁可行；
+
+I归纳：
+        涉及到作用域的问题，selectedIndex和selectedOption在eventUtil.addHandler里没有定义；
+        因此在eventUtil.addHandler里调用时获取的值是作用域链的上一层，就是它们被声明时的值，即第一个option；
