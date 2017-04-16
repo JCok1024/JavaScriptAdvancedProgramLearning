@@ -198,3 +198,64 @@ I归纳：
 	暴露的问题有：
 	1 不懂URL和服务器，没法理解域相关的问题；
 	2 搜索问题的能力有待加强；
+
+
+
+
+
+//2017.04.04 18.1
+Q1问题：
+    在XML的DOM操作中 var children = document.getElementsByTagName("child");
+    对象主体写成document是错误的；
+
+A解决方法：
+    把document改成xmldom，即原文中定义过的XML文档对象；
+
+I归纳：
+    XML和HTML有许多不同之处，注意区分；
+
+
+
+
+
+//2017.04.07 21.1
+Q1问题：
+    在Ajax操作时，浏览器提示:
+    XMLHttpRequest cannot load file:///D:/Documents/HTMLproject/ProfessionalProgram/00blankTestScript.js. 
+        Cross origin requests are only supported for protocol schemes: 
+        http, data, chrome, chrome-extension, https, chrome-extension-resource.
+
+A解决方法：
+    在浏览器快捷方式的目标位置中加入：“ --allow-file-access-from-files”
+
+I归纳：
+    异域问题
+
+
+
+
+
+//2017.04.12. 22.5
+Q1问题：
+    在拖放对象时控制台报错：
+    Cannot read property 'indexOf' of undefined
+
+A解决方法：
+    简单查了一下没有得到类似的问题答案；
+    又记起最简单的错误：拼写错误；
+    把包含indexOf的那一行重新写了一次，解决；
+
+I归纳：
+    fxxk typing wrong!
+
+
+
+
+
+//2017.04.16 23.3
+Q1问题：
+    在本地Chrome（及所有chromiun）无法通过document.cookie获取cookie；
+    在IE / FF中可以正常获取，SF未知；
+
+I归纳：
+    Chrome不支持读取本地cookie；
