@@ -259,3 +259,75 @@ Q1问题：
 
 I归纳：
     Chrome不支持读取本地cookie；
+
+
+
+Q2问题：
+    在IE / FF中调用SubCookieUtil对象无法get到子cookie的值；
+    返回      undefined and ; data
+    而不是     Nicholas and Pro JS
+
+A解决方法：
+    尝试从SubCookieUtil.getAll()中插入console.log(cookieStart + "+" + cookieEnd)检测索引；
+    返回7+-1
+    说明cookieEnd的索引获取存在问题；
+
+    插入console.log(document.cookie);
+    返回name=; data=name=Nicholas&book=Pro%20JS
+    data后并没有以;结束，而name=;是上次cookie的残余；
+    说明是document.cookie的记录与我的SubCookieUtil的方法不匹配；
+    书上也说document.cookie会返回      name1=value1;name2=value2;name3=value3等；
+    最后并没有以;结束；
+
+    尝试改变cookieEnd的获取方法：
+    发现我的代码接下来是：
+        if(cookieEnd > -1){
+            cookieEnd = document.cookie.length;
+        }
+    而书上是：
+        if(cookieEnd == -1){
+            cookieEnd = document.cookie.length;
+        }
+    瞬间明白问题……问题解决√
+    该判断语句是就是解决目标cookie作为最后一条cookie时的方法
+
+I归纳：
+    感谢抄书抄错让我纠结了一个多小时，用以脑回路清理和发呆；
+
+
+
+
+
+//2017.04.21 6.2
+Q1问题：
+    function Father(){
+        this.colors = ["red", "green", "blue"],
+        this.sayColor = function(){
+            console.log(this.colors);
+        };
+    }
+    function Child(){}
+    Child.prototype = new Father();
+
+    var child1 = new Child();
+    child1.sayColor(); // ["red", "green", "blue"] 原始值
+
+    child1.colors.push("black"); // 属性修改
+    var child2 = new Child();
+    child2.sayColor(); // ["red", "green", "blue", "black"]
+    child1.sayColor(); // ["red", "green", "blue", "black"]
+
+    使用Chrome和FF打开页面后，在第一次sayColor()时，返回的却是["red", "green", "blue", "black"];
+    而刷新页面后正常；
+
+A解决方法：
+    在Segmentfault和stackoverflow找到答案：
+    http://stackoverflow.com/questions/4057440/is-chromes-javascript-console-lazy-about-evaluating-arrays
+    至于为什么Chrome和FF都有同样的问题，可能是它们的求值实现方法是一样的吧；
+
+    这是console.log的惰性求值导致的结果，由于没有归入API，各个浏览器对此的实现方法不一样；
+    要想打开后即为正常结果，可将输出方式改为：
+    1 console.log(this.colors.toString()); // 会变成string类型，对嵌套数组支持不好；
+    2 console.log(this.colors.concat()); // 复制一个数组副本，但遇到嵌套数组可能输出的值不正确；
+    3 console.log(JSON.stringify(this.colors)); // 推荐，不会改变输出的类型和内容；
+    总之避免直接输出数组或对象类型；
