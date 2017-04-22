@@ -1,0 +1,32 @@
+// 该文档记录一些在学习《锋利的JQuery》时遇到的问题和笔记
+// 创建于2017.04.22
+
+
+//2017.04.22 2.4
+Q1问题：
+    //T43 提交表单时返回checkbox的勾选个数
+    $("#btnSubmit").click(function(){
+        var items = $("input[type=\"checkbox\"]:checked");
+        console.log(items.length);
+    })
+
+    第一次在选取checkbox并点击submit按钮后：
+        1 chrome会刷新一次页面，控制台无返回值；
+        2 FF同上；
+        3 IE刷新一次页面，并正常返回值；
+    
+    第二次选取不同项的checkbox并点击submit：
+        1 chrome会刷新一次页面，控制台无返回值；
+        2 FF同上；
+        3 IE刷新一次页面，并正常返回值；
+    
+    第三次及以后按第二次的checkbox选项再选一次并submit：
+        1 chrome不会刷新页面，但正常返回值（每submit一次返回一次）；
+        2 FF同上；
+        3 IE刷新一次页面，并返回正常值一次（每次submit后console和页面一同刷新）；
+    
+    每次submit后URL均会发生相应的更改，但控制台和页面的反应如上；
+
+A解决方法：
+    1 不使用submit，反正都是本地demo；
+    2 使用ajax提交表单，不会刷新页面；
