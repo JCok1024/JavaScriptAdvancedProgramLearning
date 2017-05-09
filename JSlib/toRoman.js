@@ -111,7 +111,7 @@ function ToRoman(num) {
 以上是本人最愚蠢的写法，下面列出参考别人的更优雅的写法：
 http://blog.sina.com.cn/s/blog_b2b1463e0102v8xr.html 原地址
 */
-
+/*
 function toRoman(num){
     var romanArr = ["I", "V", "X", "L", "C", "D", "M"];
     var roman = "";
@@ -155,3 +155,25 @@ function toRoman(num){
     }
     return roman;
 }
+*/
+/*
+找到比上面更简洁优雅的写法：
+http://lihongyang66.iteye.com/blog/694950 原地址
+ */
+function toRoman(num){
+    var Arr = [
+        ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], 
+        ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"], 
+        ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"],
+        ["", "M", "MM", "MMM"]];
+    var roman = "";
+
+    for(var i=0, m=1000; i<4; i++, m/=10){
+        var bit = Math.floor(num / m) % 10;
+        if(Arr[3-i][bit] !== undefined){
+            roman += Arr[3-i][bit];
+        }
+    }
+    return roman;
+}
+console.log(toRoman(2449));
