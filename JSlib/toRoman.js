@@ -1,14 +1,14 @@
 //以下是阿拉伯数字转换成罗马数字的函数
 //创建于2017-5-9
-
+/*
 function ToRoman(num) {
   var str = num.toString();
   var len = str.length;
   var roman = "";
-  /*
-  i指位数，0为个位，1为十位；
-  index指i位在str中的索引；
-  */
+  
+  //i指位数，0为个位，1为十位；
+  //index指i位在str中的索引；
+
   for(var i=0; i<len; i++){
     var index = len-i-1;
     switch(str[index]){
@@ -104,4 +104,54 @@ function ToRoman(num) {
     }
   }
   return roman;
+}
+*/
+
+/*
+以上是本人最愚蠢的写法，下面列出参考别人的更优雅的写法：
+http://blog.sina.com.cn/s/blog_b2b1463e0102v8xr.html 原地址
+*/
+
+function toRoman(num){
+    var romanArr = ["I", "V", "X", "L", "C", "D", "M"];
+    var roman = "";
+    var bit = 0;
+
+    while(num > 0){
+        var currBit = num % 10;
+        switch(currBit){
+            case 3:
+                roman = romanArr[bit] + roman;
+                currBit--;
+            case 2:
+                roman = romanArr[bit] + roman;
+                currBit--;
+            case 1:
+                roman = romanArr[bit] + roman;
+                break;
+            case 4:
+                roman = romanArr[bit + 1] + roman;
+                roman = romanArr[bit] + roman;
+                break;
+            case 8:
+                roman = romanArr[bit] + roman;
+                currBit--;
+            case 7:
+                roman = romanArr[bit] + roman;
+                currBit--;
+            case 6:
+                roman = romanArr[bit] + roman;
+                currBit--;
+            case 5:
+                roman = romanArr[bit + 1] + roman;
+                break;
+            case 9:
+                roman = romanArr[bit + 2] + roman;
+                roman = romanArr[bit] + roman;
+                break;
+        }
+        bit += 2;
+        num = Math.floor(num / 10);
+    }
+    return roman;
 }
